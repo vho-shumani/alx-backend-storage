@@ -3,11 +3,12 @@ DELIMITER //
 
 CREATE PROCEDURE ComputeAverageWeightedScoreForUser(IN user_id INT)
 BEGIN
-    DECLARE total_weighted_score FLOAT;
-    DECLARE total_weight INT;
+    DECLARE total_weight INT DEFAULT 0;
+    DECLARE weighted_score_sum FLOAT DEFAULT 0;
+
     SELECT 
-        SUM(c.score * p.weight) INTO total_weighted_score,
-        SUM(p.weight) INTO total_weight
+        SUM(p.weight) INTO total_weight,
+        SUM(c.score * p.weight) INTO weighted_score_sum
     FROM 
         corrections c
     JOIN 
@@ -15,13 +16,17 @@ BEGIN
     WHERE 
         c.user_id = user_id;
 
-    UPDATE users
-    SET average_score = 
-        CASE 
-            WHEN total_weight > 0 THEN total_weighted_score / total_weight
-            ELSE 0
-        END
-    WHERE id = user_id;
+    DECLARE average_weighted_score FLOAT DEFAULT 0;
+    IF total_weight > 0 THEN
+        SET average_weighted_score = weighted_score_sum / total_weight;
+    END IF;
+
+    UPDATE 
+        users
+    SET 
+        average_score = average_weighted_score
+    WHERE 
+        id = user_id;
 END //
 
 DELIMITER ;
