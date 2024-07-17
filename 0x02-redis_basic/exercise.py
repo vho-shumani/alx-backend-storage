@@ -19,12 +19,14 @@ def count_calls(method: Callable) -> Callable:
     @wraps(method)
     def wrapper(self: Any, *args, **kwargs) -> str:
         """
-        Wrapper function that increments the call count and calls the original method.
+        Wrapper function that increments the
+        call count and calls the original method.
         """
         key = method.__qualname__
         self._redis.incr(key)
         return method(self, *args, **kwargs)
     return wrapper
+
 
 def call_history(method: Callable) -> Callable:
     """
@@ -41,6 +43,7 @@ def call_history(method: Callable) -> Callable:
         return output
     return wrapper
 
+
 def replay(method: Callable):
     """
     Display the history of calls of a particular function.
@@ -50,11 +53,14 @@ def replay(method: Callable):
     inputs = red.lrange(f"{method_name}:inputs", 0, -1)
     outputs = red.lrange(f"{method_name}:outputs", 0, -1)
     calls_count = len(inputs)
-    
+
     print(f"{method_name} was called {calls_count} times:")
-    
+
     for inp, out in zip(inputs, outputs):
-        print(f"{method_name}(*{inp.decode('utf-8')}) -> {out.decode('utf-8')}")
+        input_str = inp.decode('utf-8')
+        output_str = out.decode('utf-8')
+        print(f"{method_name}(*{input_str}) -> {output_str}")
+
 
 class Cache():
     """
