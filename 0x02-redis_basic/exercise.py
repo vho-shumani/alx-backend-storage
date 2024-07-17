@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """exercise.py"""
 import redis
-from typing import Union, Callable, Optional
+from typing import Union, Callable, Optional, Any
 import uuid
 from functools import wraps
 
