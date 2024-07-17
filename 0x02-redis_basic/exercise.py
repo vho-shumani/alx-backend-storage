@@ -17,7 +17,7 @@ def count_calls(method: Callable) -> Callable:
         Callable: The wrapped method.
     """
     @wraps(method)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(self: Any, *args, **kwargs) -> str:
         """
         Wrapper function that increments the call count and calls the original method.
         """
